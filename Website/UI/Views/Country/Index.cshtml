@@ -1,0 +1,14 @@
+﻿@model IEnumerable<UI.ViewModels.CountryViewModel>
+@{
+    ViewBag.Title = "All Country";
+}
+
+<h2>All Country</h2>
+
+@foreach(var country in Model)
+{
+    <div class="row">
+        <div class="col-md-5">@country.Name</div>
+        <div class="col-md-5">@country.Code</div>
+    </div>
+}
