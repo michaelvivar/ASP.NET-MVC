@@ -11,20 +11,19 @@ namespace BL.Services
 {
     public class CountryService : BaseService 
     {
+        public CountryDto Get(int id)
+        {
+            var country = Repository<Country>().SingleOrDefault(o => o.Id == id);
+            return new CountryDto
+            {
+                Id = country.Id,
+                Name = country.Name,
+                Code = country.Code
+            };
+        }
+
         public List<CountryDto> GetAll()
         {
-            //return Repository<Country>().Get().OrderBy(o => o.Name).Select(o => new CountryDto
-            //{
-            //    Id = o.Id,
-            //    Name = o.Name,
-            //    Code = o.Code
-            //}).ToList();
-
-            Transaction.Service<UserService>(o =>
-            {
-                o.Login();
-            });
-
             return (from a in Repository<Country>().Get()
                     orderby a.Name
                     select new CountryDto
@@ -35,42 +34,40 @@ namespace BL.Services
                     }).ToList();
         }
 
-        public List<RegionDto> GetRegions(int countryId)
-        {
-            return (from a in Repository<Country>().Get()
-                    join b in Repository<Region>().Get()
-                    on a.Id equals b.Id
-                    where a.Id == countryId
-                    select new RegionDto
-                    {
-                        Id = b.Id,
-                        Name = b.Name,
-                        Code = b.Code
-                    }).ToList();
-        }
-
         public void Add(CountryDto country)
         {
-            var entity = new Country
-            {
-                Name = country.Name,
-                Code = country.Code
-            };
-
             Repository<Country>((repo, uow) =>
             {
-                repo.Add(entity);
-                //Repository<Region>(r => r.Add(new Region { Name = "Region III", Code = "Region III", Country = entity }));
+                repo.Add(new Country
+                {
+                    Name = country.Name,
+                    Code = country.Code
+                });
+                uow.SaveChanges();
+            });
+        }
+
+        public void Update(CountryDto country)
+        {
+            Repository<Country>((repo, uow) =>
+            {
+                repo.Update(new Country
+                {
+                    Id = country.Id,
+                    Name = country.Name,
+                    Code = country.Code
+                });
                 uow.SaveChanges();
             });
         }
 
         public void Delete(int id)
         {
-            Repository<Country>(r =>
+            Repository<Country>((r, u) =>
             {
                 var e = r.SingleOrDefault(o => o.Id == id);
                 r.Remove(e);
+                u.SaveChanges();
             });
         }
     }

@@ -16,18 +16,42 @@ namespace UI.Models
             // Add custom user claims here
             return userIdentity;
         }
+        //public string CompanyName { get; set; }
     }
 
+
+    //public class ApplicationDbContext : IdentityDbContext<ApplicationUser, MyRole, string, UserLogin, UserRole, UserClaim>
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            //: base("MyDbCon", throwIfV1Schema: false)
+            : base("MyDbCon")
         {
         }
 
         public static ApplicationDbContext Create()
         {
             return new ApplicationDbContext();
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ApplicationUser>().ToTable("User");
+            modelBuilder.Entity<IdentityRole>().ToTable("Role");
+            modelBuilder.Entity<IdentityUserRole>().ToTable("UserRoles");
+            modelBuilder.Entity<IdentityUserClaim>().ToTable("UserClaims");
+            modelBuilder.Entity<IdentityUserLogin>().ToTable("UserLogins");
+
+            modelBuilder.Entity<ApplicationUser>()
+                .HasKey(key => key.Id)
+                .Ignore(p => p.PhoneNumber)
+                .Ignore(p => p.PhoneNumberConfirmed)
+                .Property(p => p.PasswordHash).HasColumnName("Password");
+
+            modelBuilder.Entity<IdentityUserLogin>().HasKey<string>(l => l.UserId);
+            modelBuilder.Entity<IdentityRole>().HasKey<string>(r => r.Id);
+            modelBuilder.Entity<IdentityUserRole>().HasKey(r => new { r.RoleId, r.UserId });
+            modelBuilder.Entity<IdentityUserClaim>().HasKey(c => c.Id);
         }
     }
 }

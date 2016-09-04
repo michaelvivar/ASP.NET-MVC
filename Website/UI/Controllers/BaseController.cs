@@ -24,6 +24,11 @@ namespace UI.Controllers
             return Json(new { Status = ActionResultStatus.Warning, Message = message }, JsonRequestBehavior.AllowGet);
         }
 
+        protected JsonResult Success(string message)
+        {
+            return Json(new { Status = ActionResultStatus.Success, Message = message }, JsonRequestBehavior.AllowGet);
+        }
+
         protected void ServiceTransaction<TService>(Action<TService> action) where TService : IService, new()
         {
             Transaction.Service(action);

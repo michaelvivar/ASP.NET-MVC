@@ -1,18 +1,13 @@
 ﻿using DL.Entities;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DL
 {
     public class MyContext : DbContext
     {
         public MyContext()
-            : base("name=MyContext")
+            : base("name=MyDbCon")
         {
             this.Configuration.LazyLoadingEnabled = false;
         }
@@ -22,10 +17,6 @@ namespace DL
         public virtual DbSet<Province> Province { get; set; }
         public virtual DbSet<City> City { get; set; }
 
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Conventions.Remove<PluralizingEntitySetNameConvention>();
-        }
 
         private void FixEfProviderServicesProblem()
         {
@@ -34,6 +25,13 @@ namespace DL
             // Make sure the provider assembly is available to the running application. 
             // See http://go.microsoft.com/fwlink/?LinkId=260882 for more information.
             var instance = System.Data.Entity.SqlServer.SqlProviderServices.Instance;
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Conventions.Remove<PluralizingEntitySetNameConvention>();
         }
     }
 }

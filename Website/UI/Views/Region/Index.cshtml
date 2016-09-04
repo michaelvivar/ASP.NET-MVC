@@ -23,7 +23,7 @@
                 <td width="20"><a href="#" class="glyphicon glyphicon-trash" data-action="delete" data-uid="@country.Id"></a></td>
                 <td width="200">@Html.ActionLink(country.Name, "Edit", new { id = country.Id })</td>
                 <td>@country.Code</td>
-                <td width="120">@Html.ActionLink("View Details", "Index", "Region", new { id = country.Id }, null)</td>
+                <td width="120">@Html.Action("Index", "Region", new { id = country.Id })</td>
             </tr>
             count++;
         }
