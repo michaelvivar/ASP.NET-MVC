@@ -22,6 +22,18 @@ namespace BL.Services
             };
         }
 
+        public List<CountryDto> Get(int take, int skip)
+        {
+            return (from a in Repository<Country>().Get().Skip(skip).Take(take)
+                    orderby a.Name
+                    select new CountryDto
+                    {
+                        Id = a.Id,
+                        Name = a.Name,
+                        Code = a.Code
+                    }).ToList();
+        }
+
         public List<CountryDto> GetAll()
         {
             return (from a in Repository<Country>().Get()
