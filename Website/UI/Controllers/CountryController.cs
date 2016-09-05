@@ -23,11 +23,18 @@ namespace UI.Controllers
         }
 
         [Route("")]
-        public ActionResult Index(int? id)
+        public ActionResult Index()
         {
-            int page = id ?? 0; 
-            int perpage = 10;
-            int skip = (page > 1) ? ((page - 1) * perpage) : 0;
+            int perpage = 10; int skip = 0;
+            object page = Request.QueryString["page"];
+            if (page != null)
+            {
+                int num = Convert.ToInt32(page);
+                if (num > 1)
+                {
+                    skip = (num - 1) * perpage;
+                }
+            }
             return View(Transaction.Service<CountryService, List<CountryViewModel>>(o => o.Get(perpage, skip).Select(c => DtoToViewModel(c)).ToList()));
         }
 
