@@ -12,6 +12,16 @@ namespace UI.Controllers
 {
     public class CountryController : BaseController
     {
+        private CountryDto ViewModelToDto(CountryViewModel model)
+        {
+            return new CountryDto { Id = model.Id, Name = model.Name, Code = model.Code };
+        }
+
+        private CountryViewModel DtoToViewModel(CountryDto dto)
+        {
+            return new CountryViewModel { Id = dto.Id, Name = dto.Name, Code = dto.Code };
+        }
+
         [Route("")]
         public ActionResult Index()
         {
@@ -32,50 +42,35 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(CountryViewModel viewmodel)
+        public ActionResult Create(CountryViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dto = new CountryDto()
-                {
-                    Id = viewmodel.Id,
-                    Name = viewmodel.Name,
-                    Code = viewmodel.Code
-                };
-                Transaction.Service<CountryService>(o => o.Add(dto));
+                var dto = new CountryDto();
+                Transaction.Service<CountryService>(o => o.Add(ViewModelToDto(model)));
                 //viewmodel.Id = dto.Id;
                 return RedirectToAction("Index");
             }
-            return View(viewmodel);
+            return View(model);
         }
 
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            CountryViewModel model = new CountryViewModel();
-            Transaction.Service<CountryService>(o =>
-            {
-                var dto = o.Get(id);
-                model.Id = dto.Id; model.Name = dto.Name; model.Code = dto.Code;
-            });
+            CountryViewModel model = null;
+            Transaction.Service<CountryService>(o => model = DtoToViewModel(o.Get(id)));
             return View(model);
         }
 
         [HttpPost]
-        public ActionResult Edit(CountryViewModel viewmodel)
+        public ActionResult Edit(CountryViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var dto = new CountryDto()
-                {
-                    Id = viewmodel.Id,
-                    Name = viewmodel.Name,
-                    Code = viewmodel.Code
-                };
-                Transaction.Service<CountryService>(o => o.Update(dto));
+                Transaction.Service<CountryService>(o => o.Update(ViewModelToDto(model)));
                 return RedirectToAction("Index");
             }
-            return View(viewmodel);
+            return View(model);
         }
 
         [HttpPost]
