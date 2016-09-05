@@ -78,6 +78,7 @@ namespace UI.Controllers
             return View(viewmodel);
         }
 
+        [HttpPost]
         public JsonResult Delete(int id)
         {
             Transaction.Service<CountryService>(o => o.Delete(id));
