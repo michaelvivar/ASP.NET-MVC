@@ -25,14 +25,7 @@ namespace UI.Controllers
         [Route("")]
         public ActionResult Index()
         {
-            List<CountryViewModel> list = new List<CountryViewModel>();
-            Transaction.Service<CountryService>(o => list = o.GetAll().Select(c => new CountryViewModel
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Code = c.Code
-            }).ToList());
-            return View(list);
+            return View(Transaction.Service<CountryService, List<CountryViewModel>>(o => o.GetAll().Select(c => DtoToViewModel(c)).ToList()));
         }
 
         [HttpGet]
@@ -46,9 +39,7 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                var dto = new CountryDto();
                 Transaction.Service<CountryService>(o => o.Add(ViewModelToDto(model)));
-                //viewmodel.Id = dto.Id;
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -57,9 +48,7 @@ namespace UI.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            CountryViewModel model = null;
-            Transaction.Service<CountryService>(o => model = DtoToViewModel(o.Get(id)));
-            return View(model);
+            return View(Transaction.Service<CountryService, CountryViewModel>(o => DtoToViewModel(o.Get(id))));
         }
 
         [HttpPost]

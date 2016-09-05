@@ -13,5 +13,13 @@ namespace BL
                 action.Invoke(service);
             }
         }
+
+        public static TResult Service<TService, TResult>(Func<TService, TResult> action) where TService : IService, new()
+        {
+            using (TService service = new TService())
+            {
+                return action.Invoke(service);
+            }
+        }
     }
 }
