@@ -1,10 +1,8 @@
 ﻿using BL;
 using BL.Dto;
 using BL.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using UI.ViewModels;
 
@@ -25,17 +23,8 @@ namespace UI.Controllers
         [Route("")]
         public ActionResult Index()
         {
-            int perpage = 10; int skip = 0;
-            object page = Request.QueryString["page"];
-            if (page != null)
-            {
-                int num = Convert.ToInt32(page);
-                if (num > 1)
-                {
-                    skip = (num - 1) * perpage;
-                }
-            }
-            return View(Transaction.Service<CountryService, List<CountryViewModel>>(o => o.Get(perpage, skip).Select(c => DtoToViewModel(c)).ToList()));
+            int take = 10;
+            return View(Transaction.Service<CountryService, List<CountryViewModel>>(o => o.Get(take, Skip(take)).Select(c => DtoToViewModel(c)).ToList()));
         }
 
         [HttpGet]

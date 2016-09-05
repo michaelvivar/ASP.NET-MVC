@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using UI.Enums;
+using UI.Helpers;
 
 namespace UI.Controllers
 {
@@ -32,6 +33,17 @@ namespace UI.Controllers
         protected JsonResult Success(string message, object data)
         {
             return Json(new { Status = ActionResultStatus.Success, Message = message, Data = data }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected int Skip(int per)
+        {
+            object page = Request.QueryString["page"];
+            if (page != null)
+            {
+                int num = Convert.ToInt32(page);
+                return PaginationHelper.Skip(per, num);
+            }
+            return 0;
         }
 
         protected void ServiceTransaction<TService>(Action<TService> action) where TService : IService, new()
