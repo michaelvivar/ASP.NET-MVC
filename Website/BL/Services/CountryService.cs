@@ -59,5 +59,27 @@ namespace BL.Services
         {
             Db.UniOfWork(uow => uow.Repository<Country>(repo => repo.Remove(repo.SingleOrDefault(o => o.Id == id))));
         }
+
+        public bool CountryNameExists(string name)
+        {
+            return Db.UniOfWork(uow =>
+            {
+                return uow.Repository<Country, bool>(repo =>
+                {
+                    return repo.All().Any(o => o.Name == name);
+                });
+            });
+        }
+
+        public bool CountryCodeExists(string code)
+        {
+            return Db.UniOfWork(uow =>
+            {
+                return uow.Repository<Country, bool>(repo =>
+                {
+                    return repo.All().Any(o => o.Code == code);
+                });
+            });
+        }
     }
 }
