@@ -1,4 +1,5 @@
 ﻿using DL;
+using DL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,9 @@ namespace BL.Services
 {
     public class UserService : BaseService, IService
     {
-        //public UserService(IUnitOfWork unitOfWork) : base(unitOfWork) { }
-
-        public void Login()
+        public string GetEmailAddress(int id)
         {
-
+            return Db.UniOfWork(uow => "michaelvivar@mail.com");
         }
     }
 }

@@ -47,7 +47,7 @@ namespace UI.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            return View(Transaction.Service<CountryService, CountryViewModel>(o => DtoToViewModel(o.Get(id))));
+            return Transaction.Service<CountryService, ActionResult>(o => View(DtoToViewModel(o.Get(id))));
         }
 
         [HttpPost]
@@ -55,7 +55,7 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                Transaction.Service<CountryService>(o => o.Update(ViewModelToDto(model)));
+                Transaction.Service<CountryService>(o => o.Edit(ViewModelToDto(model)));
                 return RedirectToAction("Index");
             }
             return View(model);

@@ -7,10 +7,7 @@ using System.Threading.Tasks;
 
 namespace BL.Dto
 {
-    public class CountryDto : BaseDto
+    public abstract class BaseDto
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Code { get; set; }
     }
 }

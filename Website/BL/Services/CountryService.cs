@@ -1,8 +1,10 @@
 ﻿using BL.Dto;
 using DL;
 using DL.Entities;
+using Nelibur.ObjectMapper;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,76 +13,44 @@ namespace BL.Services
 {
     public class CountryService : BaseService 
     {
+        private Country MapDtoToEntity(CountryDto dto)
+        {
+            return TinyMapper.Map<Country>(dto);
+        }
+
+        private CountryDto MapEntityToDto(Country entity)
+        {
+            return TinyMapper.Map<CountryDto>(entity);
+        }
+
         public CountryDto Get(int id)
         {
-            var country = Repository<Country>().SingleOrDefault(o => o.Id == id);
-            return new CountryDto
-            {
-                Id = country.Id,
-                Name = country.Name,
-                Code = country.Code
-            };
+            return Db.UniOfWork(uow => MapEntityToDto(uow.Repository<Country, Country>(repo => repo.SingleOrDefault(o => o.Id == id))));
         }
 
         public List<CountryDto> Get(int take, int skip)
         {
-            return (from a in Repository<Country>().Get().Skip(skip).Take(take)
-                    orderby a.Name
-                    select new CountryDto
-                    {
-                        Id = a.Id,
-                        Name = a.Name,
-                        Code = a.Code
-                    }).ToList();
+            return Db.UniOfWork(uow => uow.Repository<Country, List<CountryDto>>(repo => repo.All().OrderBy(o => o.Name).Skip(skip).Take(take).Select(a => MapEntityToDto(a)).ToList()));
         }
 
-        public List<CountryDto> GetAll()
+        public List<CountryDto> All()
         {
-            return (from a in Repository<Country>().Get()
-                    orderby a.Name
-                    select new CountryDto
-                    {
-                        Id = a.Id,
-                        Name = a.Name,
-                        Code = a.Code
-                    }).ToList();
+            return Db.UniOfWork(uow => uow.Repository<Country, List<CountryDto>>(repo => repo.All().OrderBy(o => o.Name).Select(a => MapEntityToDto(a)).ToList()));
         }
 
         public void Add(CountryDto country)
         {
-            Repository<Country>((repo, uow) =>
-            {
-                repo.Add(new Country
-                {
-                    Name = country.Name,
-                    Code = country.Code
-                });
-                uow.SaveChanges();
-            });
+            Db.UniOfWork(uow => uow.Repository<Country>(repo => repo.Add(MapDtoToEntity(country))));
         }
 
-        public void Update(CountryDto country)
+        public void Edit(CountryDto country)
         {
-            Repository<Country>((repo, uow) =>
-            {
-                repo.Update(new Country
-                {
-                    Id = country.Id,
-                    Name = country.Name,
-                    Code = country.Code
-                });
-                uow.SaveChanges();
-            });
+            Db.UniOfWork(uow => uow.Repository<Country>(repo => repo.Update(MapDtoToEntity(country))));
         }
 
         public void Delete(int id)
         {
-            Repository<Country>((r, u) =>
-            {
-                var e = r.SingleOrDefault(o => o.Id == id);
-                r.Remove(e);
-                u.SaveChanges();
-            });
+            Db.UniOfWork(uow => uow.Repository<Country>(repo => repo.Remove(repo.SingleOrDefault(o => o.Id == id))));
         }
     }
 }

@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Db.cs" />
     <Compile Include="Entities\City.cs" />
     <Compile Include="Entities\Province.cs" />
     <Compile Include="Entities\Region.cs" />

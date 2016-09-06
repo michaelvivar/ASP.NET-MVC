@@ -7,22 +7,42 @@ using System.Threading.Tasks;
 
 namespace DL
 {
-    public class UnitOfWork : IUnitOfWork, IDisposable
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly DbContext _context;
-        public UnitOfWork(MyContext context)
+        List<RepositoryContainer> _repositories = new List<RepositoryContainer>();
+
+        internal UnitOfWork(DbContext context)
         {
             _context = context;
         }
 
-        public void Dispose()
+        public void Repository<TEntity>(Action<IRepository<TEntity>> action) where TEntity : class
         {
-            _context.Dispose();
+            if (_repositories.Any(o => o.Type == typeof(TEntity)))
+            {
+                action.Invoke((IRepository<TEntity>)_repositories.Find(o => o.Type == typeof(TEntity)).Repository);
+            }
+            else
+            {
+                var repository = new Repository<TEntity>(_context);
+                _repositories.Add(new RepositoryContainer { Type = typeof(TEntity), Repository = repository });
+                action.Invoke(repository);
+            }
         }
 
-        public IRepository<TEntity> Repository<TEntity>() where TEntity : class
+        public TOut Repository<TEntity, TOut>(Func<IRepository<TEntity>, TOut> action) where TEntity : class
         {
-            return new Repository<TEntity>(_context);
+            if (_repositories.Any(o => o.Type == typeof(TEntity)))
+            {
+                return action.Invoke((IRepository<TEntity>)_repositories.Find(o => o.Type == typeof(TEntity)).Repository);
+            }
+            else
+            {
+                var repository = new Repository<TEntity>(_context);
+                _repositories.Add(new RepositoryContainer { Type = typeof(TEntity), Repository = repository });
+                return action.Invoke(repository);
+            }
         }
 
         public void SaveChanges()
@@ -33,7 +53,13 @@ namespace DL
 
     public interface IUnitOfWork
     {
-        IRepository<TEntity> Repository<TEntity>() where TEntity : class;
-        void SaveChanges();
+        void Repository<TEntity>(Action<IRepository<TEntity>> action) where TEntity : class;
+        TOut Repository<TEntity, TOut>(Func<IRepository<TEntity>, TOut> action) where TEntity : class;
+    }
+
+    internal class RepositoryContainer
+    {
+        internal Type Type { get; set; }
+        internal object Repository { get; set; }
     }
 }

@@ -8,18 +8,16 @@ namespace BL
     {
         public static void Service<TService>(Action<TService> action) where TService : IService, new()
         {
-            using (TService service = new TService())
-            {
-                action.Invoke(service);
-            }
+            //TService service = (TService)Activator.CreateInstance(typeof(TService), uow);
+            TService service = new TService();
+            action.Invoke(service);
         }
 
-        public static TResult Service<TService, TResult>(Func<TService, TResult> action) where TService : IService, new()
+        public static TOut Service<TService, TOut>(Func<TService, TOut> action) where TService : IService, new()
         {
-            using (TService service = new TService())
-            {
-                return action.Invoke(service);
-            }
+            //TService service = (TService)Activator.CreateInstance(typeof(TService), uow);
+            TService service = new TService();
+            return action.Invoke(service);
         }
     }
 }

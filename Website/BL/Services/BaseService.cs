@@ -3,28 +3,21 @@ using System;
 
 namespace BL.Services
 {
-    public class BaseService : IService
+    public abstract class BaseService : IService
     {
-        protected readonly IUnitOfWork _unitOfWork = new UnitOfWork(new MyContext());
-
         public void Dispose()
         {
-            ((UnitOfWork)_unitOfWork).Dispose();
+            
         }
 
-        protected IRepository<TEntity> Repository<TEntity>() where TEntity : class
+        protected void Service<TService>(Action<TService> action) where TService : IService, new()
         {
-            return _unitOfWork.Repository<TEntity>();
+            Transaction.Service(action);
         }
 
-        protected void Repository<TEntity>(Action<IRepository<TEntity>> action) where TEntity : class
+        protected TOut Service<TService, TOut>(Func<TService, TOut> action) where TService : IService, new()
         {
-            action.Invoke(Repository<TEntity>());
-        }
-
-        protected void Repository<TEntity>(Action<IRepository<TEntity>, IUnitOfWork> action) where TEntity : class
-        {
-            action.Invoke(Repository<TEntity>(), _unitOfWork);
+            return Transaction.Service(action);
         }
     }
 

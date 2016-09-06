@@ -1,12 +1,13 @@
 ﻿using DL.Entities;
+using System;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace DL
 {
-    public class MyContext : DbContext
+    public class MyContext : DbContext, IDisposable
     {
-        public MyContext()
+        internal MyContext()
             : base("name=MyDbCon")
         {
             this.Configuration.LazyLoadingEnabled = false;
@@ -32,6 +33,11 @@ namespace DL
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Conventions.Remove<PluralizingEntitySetNameConvention>();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
         }
     }
 }
