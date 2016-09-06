@@ -11,7 +11,7 @@ namespace DL
         private static MyContext StaticContext;
         private static UnitOfWork StaticUnitOfWork;
 
-        public static TOut UniOfWork<TOut>(Func<IUnitOfWork, TOut> action)
+        public static TOut UniOfWork<TOut>(Func<UnitOfWork, TOut> action)
         {
             if (StaticContext != null)
             {
@@ -24,7 +24,10 @@ namespace DL
                     StaticContext = context;
                     StaticUnitOfWork = new UnitOfWork(context);
                     var o = action.Invoke(StaticUnitOfWork);
-                    StaticContext.SaveChanges();
+                    if (StaticContext.ChangeTracker.HasChanges())
+                    {
+                        StaticContext.SaveChanges();
+                    }
                     StaticContext = null;
                     StaticUnitOfWork = null;
                     return o;
@@ -32,7 +35,7 @@ namespace DL
             }
         }
 
-        public static void UniOfWork(Action<IUnitOfWork> action)
+        public static void UniOfWork(Action<UnitOfWork> action)
         {
             if (StaticContext != null)
             {
@@ -45,7 +48,10 @@ namespace DL
                     StaticContext = context;
                     StaticUnitOfWork = new UnitOfWork(context);
                     action.Invoke(StaticUnitOfWork);
-                    StaticContext.SaveChanges();
+                    if (StaticContext.ChangeTracker.HasChanges())
+                    {
+                        StaticContext.SaveChanges();
+                    }
                     StaticContext = null;
                     StaticUnitOfWork = null;
                 }

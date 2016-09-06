@@ -38,9 +38,16 @@ namespace BL.Services
             return Db.UniOfWork(uow => uow.Repository<Country, List<CountryDto>>(repo => repo.All().OrderBy(o => o.Name).Select(a => MapEntityToDto(a)).ToList()));
         }
 
-        public void Add(CountryDto country)
+        public CountryDto Add(CountryDto country)
         {
-            Db.UniOfWork(uow => uow.Repository<Country>(repo => repo.Add(MapDtoToEntity(country))));
+            return Db.UniOfWork(uow => uow.Repository<Country, CountryDto>(repo =>
+            {
+                var entity = MapDtoToEntity(country);
+                repo.Add(entity);
+                uow.SaveChanges();
+                country.Id = entity.Id;
+                return country;
+            }));
         }
 
         public void Edit(CountryDto country)

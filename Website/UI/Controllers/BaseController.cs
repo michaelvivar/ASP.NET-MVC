@@ -46,9 +46,14 @@ namespace UI.Controllers
             return 0;
         }
 
-        protected void ServiceTransaction<TService>(Action<TService> action) where TService : IService, new()
+        protected void Service<TService>(Action<TService> action) where TService : IService, new()
         {
             Transaction.Service(action);
+        }
+
+        protected TOut Service<TService, TOut>(Func<TService, TOut> action) where TService : IService, new()
+        {
+            return Transaction.Service(action);
         }
     }
 }

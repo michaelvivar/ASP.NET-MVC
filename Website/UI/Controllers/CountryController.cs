@@ -24,7 +24,7 @@ namespace UI.Controllers
         public ActionResult Index()
         {
             int take = 10;
-            return View(Transaction.Service<CountryService, List<CountryViewModel>>(o => o.Get(take, Skip(take)).Select(c => DtoToViewModel(c)).ToList()));
+            return View(Service<CountryService, List<CountryViewModel>>(o => o.Get(take, Skip(take)).Select(c => DtoToViewModel(c)).ToList()));
         }
 
         [HttpGet]
@@ -38,7 +38,7 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                Transaction.Service<CountryService>(o => o.Add(ViewModelToDto(model)));
+                Service<CountryService>(o => o.Add(ViewModelToDto(model)));
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -47,7 +47,7 @@ namespace UI.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            return Transaction.Service<CountryService, ActionResult>(o => View(DtoToViewModel(o.Get(id))));
+            return Service<CountryService, ActionResult>(o => View(DtoToViewModel(o.Get(id))));
         }
 
         [HttpPost]
@@ -55,7 +55,7 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                Transaction.Service<CountryService>(o => o.Edit(ViewModelToDto(model)));
+                Service<CountryService>(o => o.Edit(ViewModelToDto(model)));
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -64,7 +64,7 @@ namespace UI.Controllers
         [HttpPost]
         public JsonResult Delete(int id)
         {
-            Transaction.Service<CountryService>(o => o.Delete(id));
+            Service<CountryService>(o => o.Delete(id));
             return Success("Record has been successfully deleted!");
         }
     }
