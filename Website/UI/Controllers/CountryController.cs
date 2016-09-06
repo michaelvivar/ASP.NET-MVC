@@ -34,7 +34,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(CountryViewModel model)
+        public ActionResult Create(ValidateCountryViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -51,7 +51,7 @@ namespace UI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(CountryViewModel model)
+        public ActionResult Edit(ValidateCountryViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +65,7 @@ namespace UI.Controllers
         public JsonResult Delete(int id)
         {
             Service<CountryService>(o => o.Delete(id));
-            return Success("Record has been successfully deleted!");
+            return JsonResultSuccess(new[] { "Record has been successfully deleted!" });
         }
     }
 }

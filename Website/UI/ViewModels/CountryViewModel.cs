@@ -8,17 +8,20 @@ using System.Web;
 
 namespace UI.ViewModels
 {
-    public class CountryViewModel : IValidatableObject
+    public class CountryViewModel
     {
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]
         public string Code { get; set; }
+    }
 
+    public class ValidateCountryViewModel : CountryViewModel, IValidatableObject
+    {
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            bool[] result = Transaction.Service<CountryService, bool[]>(service =>
+            bool[] result = Transaction.Service<CountryValidatorService, bool[]>(service =>
             {
                 bool[] r = new bool[2];
                 r[0] = service.CountryNameExists(Name);
@@ -31,7 +34,7 @@ namespace UI.ViewModels
             }
             if (result[1])
             {
-                yield return new ValidationResult(string.Format("Code \"{0}\" is already exists!", Name), new[] { nameof(Name) });
+                yield return new ValidationResult(string.Format("Code \"{0}\" is already exists!", Code), new[] { nameof(Code) });
             }
         }
     }

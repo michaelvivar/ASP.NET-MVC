@@ -10,29 +10,34 @@ namespace UI.Controllers
 {
     public abstract class BaseController : Controller
     {
-        protected JsonResult Error(string message)
+        protected JsonResult JsonResultError(IEnumerable<string> messages)
         {
-            return Json(new { Status = ActionResultStatus.Error, Message = message }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = ActionResultStatus.Error, Messages = messages }, JsonRequestBehavior.AllowGet);
         }
 
-        protected JsonResult Error(List<string> messages)
+        protected JsonResult JsonResultError(IEnumerable<string> messages, object data)
         {
-            return Json(new { Status = ActionResultStatus.Error, Message = messages }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = ActionResultStatus.Error, Messages = messages, Data = data }, JsonRequestBehavior.AllowGet);
         }
 
-        protected JsonResult Warning(string message)
+        protected JsonResult JsonResultWarning(IEnumerable<string> messages)
         {
-            return Json(new { Status = ActionResultStatus.Warning, Message = message }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = ActionResultStatus.Warning, Messages = messages }, JsonRequestBehavior.AllowGet);
         }
 
-        protected JsonResult Success(string message)
+        protected JsonResult JsonResultWarning(IEnumerable<string> messages, object data)
         {
-            return Json(new { Status = ActionResultStatus.Success, Message = message }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = ActionResultStatus.Error, Messages = messages, Data = data }, JsonRequestBehavior.AllowGet);
         }
 
-        protected JsonResult Success(string message, object data)
+        protected JsonResult JsonResultSuccess(IEnumerable<string> messages)
         {
-            return Json(new { Status = ActionResultStatus.Success, Message = message, Data = data }, JsonRequestBehavior.AllowGet);
+            return Json(new { Status = ActionResultStatus.Success, Messages = messages }, JsonRequestBehavior.AllowGet);
+        }
+
+        protected JsonResult JsonResultSuccess(IEnumerable<string> messages, object data)
+        {
+            return Json(new { Status = ActionResultStatus.Success, Messages = messages, Data = data }, JsonRequestBehavior.AllowGet);
         }
 
         protected int Skip(int per)
