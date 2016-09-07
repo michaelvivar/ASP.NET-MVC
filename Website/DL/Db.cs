@@ -11,7 +11,7 @@ namespace DL
         private static MyContext StaticContext;
         private static UnitOfWork StaticUnitOfWork;
 
-        public static TOut UniOfWork<TOut>(Func<UnitOfWork, TOut> action)
+        public static TOut UniOfWork<TOut>(Func<IUnitOfWork, TOut> action)
         {
             if (StaticContext != null)
             {
@@ -35,7 +35,7 @@ namespace DL
             }
         }
 
-        public static void UniOfWork(Action<UnitOfWork> action)
+        public static void UniOfWork(Action<IUnitOfWork> action)
         {
             if (StaticContext != null)
             {

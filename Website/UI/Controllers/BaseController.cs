@@ -10,6 +10,36 @@ namespace UI.Controllers
 {
     public abstract class BaseController : Controller
     {
+        #region Json Results
+        protected JsonResult JsonFormError(ModelStateDictionary model)
+        {
+            object[] keys = new object[model.Keys.Count];
+            List<string> errors = new List<string>();
+            List<object> list = new List<object>();
+
+            int count = 0;
+            foreach (var key in model.Keys)
+            {
+                keys[count] = key;
+                count++;
+            }
+            count = 0;
+            foreach (var value in model.Values)
+            {
+                List<string> str = new List<string>();
+                if (value.Errors.Count > 0)
+                {
+                    foreach (var err in value.Errors)
+                    {
+                        str.Add(err.ErrorMessage);
+                        errors.Add(err.ErrorMessage);
+                    }
+                }
+                list.Add(new { Field = keys[count], Errors = str });
+                count++;
+            }
+            return JsonResultError(errors, list);
+        }
         protected JsonResult JsonResultError(IEnumerable<string> messages)
         {
             return Json(new { Status = ActionResultStatus.Error, Messages = messages }, JsonRequestBehavior.AllowGet);
@@ -38,7 +68,8 @@ namespace UI.Controllers
         protected JsonResult JsonResultSuccess(IEnumerable<string> messages, object data)
         {
             return Json(new { Status = ActionResultStatus.Success, Messages = messages, Data = data }, JsonRequestBehavior.AllowGet);
-        }
+        } 
+        #endregion
 
         protected int Skip(int per)
         {

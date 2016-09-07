@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DL
 {
@@ -53,6 +51,7 @@ namespace DL
 
     public interface IUnitOfWork
     {
+        void SaveChanges();
         void Repository<TEntity>(Action<IRepository<TEntity>> action) where TEntity : class;
         TOut Repository<TEntity, TOut>(Func<IRepository<TEntity>, TOut> action) where TEntity : class;
     }

@@ -1,6 +1,6 @@
-﻿using BL;
-using BL.Dto;
+﻿using BL.Dto;
 using BL.Services;
+using Nelibur.ObjectMapper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -10,44 +10,55 @@ namespace UI.Controllers
 {
     public class CountryController : BaseController
     {
-        private CountryDto ViewModelToDto(CountryViewModel model)
+        private CountryDto MapViewModelToDto(CountryViewModel model)
         {
-            return new CountryDto { Id = model.Id, Name = model.Name, Code = model.Code };
+            return TinyMapper.Map<CountryDto>(model);
         }
 
-        private CountryViewModel DtoToViewModel(CountryDto dto)
+        private CountryViewModel MapDtoToViewModel(CountryDto dto)
         {
-            return new CountryViewModel { Id = dto.Id, Name = dto.Name, Code = dto.Code };
+            return TinyMapper.Map<CountryViewModel>(dto);
         }
 
         [Route("")]
         public ActionResult Index()
         {
-            int take = 10;
-            return View(Service<CountryService, List<CountryViewModel>>(o => o.Get(take, Skip(take)).Select(c => DtoToViewModel(c)).ToList()));
+            return Service<CountryService, ActionResult>(service =>
+            {
+                int take = 10;
+                return View(service.Get(take, Skip(take)).Select(c => MapDtoToViewModel(c)).ToList());
+            });
         }
 
         [HttpGet]
         public ActionResult Create()
         {
-            return View(new CountryViewModel());
+            var model = new CountryViewModel();
+            return View(model);
         }
 
         [HttpPost]
         public ActionResult Create(ValidateCountryViewModel model)
         {
+            var error = ViewData.ModelState.Where(o => o.Value.Errors.Count > 0).ToList();
+
             if (ModelState.IsValid)
             {
-                Service<CountryService>(o => o.Add(ViewModelToDto(model)));
+                Service<CountryService>(service => service.Add(MapViewModelToDto(model)));
                 return RedirectToAction("Index");
             }
-            return View(model);
+            return JsonFormError(ModelState);
+            //return View(model);
         }
 
         [HttpGet]
         public ActionResult Edit(int id)
         {
-            return Service<CountryService, ActionResult>(o => View(DtoToViewModel(o.Get(id))));
+            return Service<CountryService, ActionResult>(service =>
+            {
+                return View(MapDtoToViewModel(service.Get(id)));
+            });
+               
         }
 
         [HttpPost]
@@ -55,7 +66,7 @@ namespace UI.Controllers
         {
             if (ModelState.IsValid)
             {
-                Service<CountryService>(o => o.Edit(ViewModelToDto(model)));
+                Service<CountryService>(service => service.Edit(MapViewModelToDto(model)));
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -64,8 +75,14 @@ namespace UI.Controllers
         [HttpPost]
         public JsonResult Delete(int id)
         {
-            Service<CountryService>(o => o.Delete(id));
+            Service<CountryService>(service => service.Delete(id));
             return JsonResultSuccess(new[] { "Record has been successfully deleted!" });
         }
+    }
+
+    public class TextValueItem
+    {
+        public string Text { get; set; }
+        public object Value { get; set; }
     }
 }

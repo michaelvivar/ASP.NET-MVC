@@ -10,3 +10,15 @@
 <div class="container">
     @Html.Partial("_Form", Model)
 </div>
+
+@section scripts {
+    <script type="text/javascript">
+        $('form').submit(function () {
+            $.post('/country/create', $(this).serializeArray(), function (data) {
+                console.log(data);
+            });
+            return false;
+        });
+
+    </script>    
+}
