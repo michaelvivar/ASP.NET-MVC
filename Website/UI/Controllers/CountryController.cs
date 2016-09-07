@@ -47,8 +47,8 @@ namespace UI.Controllers
                 Service<CountryService>(service => service.Add(MapViewModelToDto(model)));
                 return RedirectToAction("Index");
             }
-            return JsonFormError(ModelState);
-            //return View(model);
+            //return JsonFormError(ModelState);
+            return View(model);
         }
 
         [HttpGet]
